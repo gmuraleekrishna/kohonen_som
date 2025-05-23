@@ -8,24 +8,25 @@ import numpy as np
 # 3. Vectorize for loop
 
 def train(input_data, n_max_iterations, width, height):
-    sigma_0 = max(width, height) / 2
-    alpha_0 = 0.1
+    neighborhood_radius_init = max(width, height) / 2
+    init_learning_rate = 0.1
     weights = np.random.random((width, height, 3))
-    time_const = n_max_iterations / np.log(sigma_0)
+    time_const = n_max_iterations / np.log(neighborhood_radius_init)
     
     x = np.arange(width)
     y = np.arange(height)
     x_coords, y_coords = np.meshgrid(x, y, indexing='ij')
-    for t in range(n_max_iterations):
-        sigma_t = sigma_0 * np.exp(-t/time_const)
-        alpha_t = alpha_0 * np.exp(-t/time_const)
+    for step_idx in range(n_max_iterations):
+        decay_factor = np.exp(-step_idx/time_const)
+        neighborhood_radius = neighborhood_radius_init * decay_factor
+        learning_rate = init_learning_rate * decay_factor
         for vt in input_data:
             bmu = np.argmin(np.sum((weights - vt) ** 2, axis=2))
             bmu_x, bmu_y = np.unravel_index(bmu, (width, height))
-                    
+
             di = distance(bmu_x, bmu_y, x_coords, y_coords)
-            theta_t = np.exp(-(di ** 2) / (2*(sigma_t ** 2)))
-            weights += alpha_t * theta_t[:, :, np.newaxis] * (vt - weights)
+            influence_factor = np.exp(-(di ** 2) / (2*(neighborhood_radius ** 2)))
+            weights += learning_rate * influence_factor[:, :, np.newaxis] * (vt - weights)
 
     return weights
 
