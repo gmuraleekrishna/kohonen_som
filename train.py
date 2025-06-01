@@ -5,8 +5,8 @@ import numpy as np
 
 ## Changes 
 # 1. rename unicode variables to readable ascii
-# 2. move `distance` to a method 
-# 3. Vectorize for loop
+# 2. move `distance`logic to a method 
+# 3. Vectorize `for` loop
 # 4. Refactor for readability
 
 def train(input_data, n_max_iterations, width, height):
@@ -32,14 +32,13 @@ def update_weight(width, height, weights, x_coords, y_coords, neighborhood_radiu
     bmu = np.argmin(np.sum((weights - vt) ** 2, axis=2))
     bmu_x, bmu_y = np.unravel_index(bmu, (width, height))
 
-    di = distance(bmu_x, bmu_y, x_coords, y_coords)
-    influence_factor = np.exp(-(di ** 2) / (2*(neighborhood_radius ** 2)))
+    dist = calculate_distance(bmu_x, bmu_y, x_coords, y_coords)
+    influence_factor = np.exp(-(dist ** 2) / (2*(neighborhood_radius ** 2)))
     weights += learning_rate * influence_factor[:, :, np.newaxis] * (vt - weights)
     return weights
 
-def distance(bmu_x, bmu_y, x, y):
-    di = np.sqrt(((x - bmu_x) ** 2) + ((y - bmu_y) ** 2))
-    return di
+def calculate_distance(bmu_x, bmu_y, x, y):
+    return np.sqrt(((x - bmu_x) ** 2) + ((y - bmu_y) ** 2))
 
 
 if __name__ == '__main__':
