@@ -8,10 +8,12 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 ## Changes 
-# 1. rename unicode variables to readable ascii
-# 2. move `distance`logic to a method 
-# 3. Vectorize `for` loop
-# 4. Refactor for readability
+# 1. Refactor for Redability, Single Responsiblility and DRY principles
+# 2. Vectorise code for optimisation
+# 3. Add logging
+# 4. Make model parameters user accessible
+# 5. Store model weights
+
 
 def train(input_data, n_iterations, init_learning_rate, width, height, record_frames=True):
     frames = [] if record_frames else None
@@ -69,11 +71,8 @@ def main():
     # Generate data
     input_data = np.random.random((args.n_samples, args.input_size))
 
-    start_time = timeit.default_timer()
     image_data, frames = train(input_data, args.iterations, args.init_lr, args.width, args.height, args.input_size)
-    end_time = timeit.default_timer()
     plt.imsave('1000.png', image_data)
-    print(f"Duration 2: {end_time - start_time}s")
 
     fig, ax = plt.subplots()
     im = plt.imshow(frames[0], animated=True)
